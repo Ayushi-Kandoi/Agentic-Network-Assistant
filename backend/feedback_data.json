@@ -1,0 +1,65 @@
+[
+  {
+    "ticket_number": "RIP123456789",
+    "section": "summary",
+    "verdict": "correct",
+    "comment": null,
+    "timestamp": "2026-02-27T21:05:37.566479"
+  },
+  {
+    "ticket_number": "RIP123456789",
+    "section": "summary",
+    "verdict": "comment",
+    "comment": "Can we provide better evidence",
+    "timestamp": "2026-02-27T21:06:01.099906"
+  },
+  {
+    "ticket_number": "TKT-2025001",
+    "section": "summary",
+    "verdict": "correct",
+    "comment": null,
+    "timestamp": "2026-03-01T14:28:43.889277"
+  },
+  {
+    "ticket_number": "TKT-2025001",
+    "section": "recommendation",
+    "verdict": "correct",
+    "comment": null,
+    "timestamp": "2026-03-01T14:28:46.087896"
+  },
+  {
+    "ticket_number": "TKT-2025001",
+    "section": "summary",
+    "verdict": "correct",
+    "comment": null,
+    "timestamp": "2026-03-01T14:40:23.237904"
+  },
+  {
+    "ticket_number": "TKT-2025001",
+    "section": "recommendation",
+    "verdict": "correct",
+    "comment": null,
+    "timestamp": "2026-03-01T14:40:24.468849"
+  },
+  {
+    "ticket_number": "TKT-2025001",
+    "section": "summary",
+    "verdict": "correct",
+    "comment": null,
+    "timestamp": "2026-03-02T10:06:23.416068"
+  },
+  {
+    "ticket_number": "TKT-2025001",
+    "section": "recommendation",
+    "verdict": "incorrect",
+    "comment": null,
+    "timestamp": "2026-03-02T10:06:27.845664"
+  },
+  {
+    "ticket_number": "TKT-2025001",
+    "section": "summary",
+    "verdict": "correct",
+    "comment": null,
+    "timestamp": "2026-03-03T13:07:38.219973"
+  }
+]

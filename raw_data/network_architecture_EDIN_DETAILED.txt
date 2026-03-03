@@ -1,0 +1,1066 @@
+================================================================================
+EDIN NETWORK ARCHITECTURE — DETAILED TECHNICAL GUIDE
+Network Operations Centre (NOC) — Confidential Internal Document
+Version 4.2 | Last Updated: May 2025
+================================================================================
+
+TABLE OF CONTENTS
+─────────────────
+1.  Overview & Purpose
+2.  Network Topology Description
+3.  Network Element Reference: CPE
+4.  Network Element Reference: DSLAM
+5.  Network Element Reference: Metro Bridge (MB)
+6.  Network Element Reference: Metro Core (MC)
+7.  Network Element Reference: Peta Core
+8.  Network Element Reference: Datacenter (DC)
+9.  Interconnect & Fibre Infrastructure
+10. Ethernet & VLAN Configuration Standards
+11. IP Addressing & Routing Protocols
+12. Quality of Service (QoS) Policy
+13. Network Management & Monitoring
+14. Fault Management & Alarm Reference
+15. Troubleshooting Procedures
+16. SLA Policy & Escalation Matrix
+17. Change Management Procedures
+18. Glossary
+
+================================================================================
+1. OVERVIEW & PURPOSE
+================================================================================
+
+This document provides a comprehensive technical reference for the EDIN (Ethernet
+Distribution Infrastructure Network) architecture. It covers the end-to-end
+connection model from Customer Premise Equipment (CPE) through DSLAM aggregation,
+Metro Bridge (MB) nodes, Metro Core (MC) nodes, Peta Core routing, and termination
+at the Datacenter (DC).
+
+This guide is intended for:
+  - NOC Tier 1, Tier 2, and Tier 3 engineers
+  - Field operations and provisioning teams
+  - Planning and capacity management teams
+  - Automated root-cause analysis systems and AI agents
+
+The network supports 100 DSLAM nodes serving residential and business customers
+across 10 metropolitan areas. All transport is Ethernet-based using IEEE 802.1Q
+VLAN encapsulation and MPLS label switching at the core layers.
+
+================================================================================
+2. NETWORK TOPOLOGY DESCRIPTION
+================================================================================
+
+END-TO-END CONNECTION MODEL
+────────────────────────────
+The canonical path of a customer connection is:
+
+  [Customer Device] ─── [CPE] ─── [DSLAM] ─── (fibre) ─── [MB Node]
+       ─── (fibre) ─── [MC Node] ─── (fibre) ─── [Peta Core]
+       ─── (fibre/dark wave) ─── [Datacenter]
+
+Layer summary:
+  ┌─────────────────────────────────────────────────────────────────────┐
+  │ Layer        │ Devices            │ Role                            │
+  ├─────────────────────────────────────────────────────────────────────┤
+  │ Access       │ CPE, DSLAM         │ Last-mile delivery              │
+  │ Aggregation  │ Metro Bridge (MB)  │ DSLAM aggregation, VLAN tagging │
+  │ Metro Core   │ Metro Core (MC)    │ MPLS core, inter-MB routing     │
+  │ Backbone     │ Peta Core          │ Inter-city / backbone routing   │
+  │ Termination  │ Datacenter (DC)    │ Service termination & BNG       │
+  └─────────────────────────────────────────────────────────────────────┘
+
+NODE INVENTORY SUMMARY
+──────────────────────
+  - DSLAM nodes : 100  (10 per metropolitan area × 10 areas)
+  - MB nodes    : 10   (1 per metropolitan area)
+  - MC nodes    : 4    (regional hubs)
+  - Peta Cores  : 2    (active-active pair)
+  - Datacenters : 2    (DC-NORTH-01, DC-SOUTH-01)
+
+METROPOLITAN AREA ASSIGNMENTS
+──────────────────────────────
+  Area          MB Node    MC Node    DSLAMs
+  ─────────────────────────────────────────
+  LONDON        MB-01      MC-01      DSLAM-LON-001 to DSLAM-LON-010
+  MANCHESTER     MB-02      MC-01      DSLAM-MAN-011 to DSLAM-MAN-020
+  BIRMINGHAM    MB-03      MC-02      DSLAM-BIR-021 to DSLAM-BIR-030
+  LEEDS         MB-04      MC-02      DSLAM-LEE-031 to DSLAM-LEE-040
+  GLASGOW       MB-05      MC-03      DSLAM-GLA-041 to DSLAM-GLA-050
+  LIVERPOOL     MB-06      MC-01      DSLAM-LIV-051 to DSLAM-LIV-060
+  BRISTOL       MB-07      MC-02      DSLAM-BRI-061 to DSLAM-BRI-070
+  SHEFFIELD     MB-08      MC-03      DSLAM-SHE-071 to DSLAM-SHE-080
+  EDINBURGH     MB-09      MC-03      DSLAM-EDI-081 to DSLAM-EDI-090
+  CARDIFF       MB-10      MC-04      DSLAM-CAR-091 to DSLAM-CAR-100
+
+================================================================================
+3. NETWORK ELEMENT: CPE (Customer Premise Equipment)
+================================================================================
+
+DESCRIPTION
+───────────
+The CPE is the demarcation point between the operator network and the customer
+premises. It provides Ethernet handoff to customer devices (routers, set-top boxes,
+business switches). CPE devices are remotely managed via TR-069/TR-369 (CWMP/USP)
+protocols over a dedicated management VLAN.
+
+HARDWARE MODELS IN DEPLOYMENT
+──────────────────────────────
+  Model A: EdgeRouter E300  — Residential (100M/1G Ethernet WAN, 4×GE LAN, WiFi-6)
+  Model B: BizEdge B600     — Business (1G WAN, 8×GE LAN, SFP uplink, managed switch)
+  Model C: FibreGate F100   — FTTH residential (GPON ONU + Ethernet bridge)
+
+INTERFACES
+──────────
+  WAN Interface : ETH0 — connected to DSLAM subscriber port
+  LAN Interfaces: ETH1–ETH4 (residential) or ETH1–ETH8 (business)
+  Management    : VLAN 4000 (out-of-band management, TR-069 ACS reachable)
+
+IP ADDRESS SCHEME — CPE
+────────────────────────
+  WAN IP allocation  : DHCP from BNG (Broadband Network Gateway) at Datacenter
+  LAN default subnet : 192.168.1.0/24 (residential), 10.x.x.0/29 (business static)
+  Management IP      : 172.20.0.0/16 pool, assigned by ACS on CPE registration
+
+KEY CONFIGURATION PARAMETERS
+──────────────────────────────
+  MTU                : 1500 bytes (WAN), 1500 bytes (LAN)
+  DHCP Server        : Enabled on LAN by default (residential)
+  PPPoE Client       : Enabled on WAN interface (residential lines)
+  IPoE              : Used on business lines with static assignment
+  QoS marking        : DSCP EF for VoIP, AF41 for IPTV, BE for data
+  VLAN tagging       : S-tag applied at DSLAM; CPE operates untagged on WAN
+
+CONFIGURATION EXAMPLE (Business CPE B600)
+──────────────────────────────────────────
+  interface eth0
+    description "WAN Uplink to DSLAM-LON-001 Port 12"
+    ip address dhcp
+    no shutdown
+    mtu 1500
+  !
+  interface eth1
+    description "Customer LAN"
+    ip address 10.50.12.1/29
+    no shutdown
+  !
+  ip route 0.0.0.0/0 dhcp
+  !
+  management
+    protocol tr069
+    acs-url https://acs.edin.net/cwmp
+    vlan 4000
+
+FAULT INDICATORS — CPE
+───────────────────────
+  - WAN LED off           → Physical link down, check DSLAM port
+  - WAN LED amber         → Signal present but no IP lease obtained
+  - Ping loss to CPE      → Check DSLAM subscriber port status and VLAN mapping
+  - TR-069 alarm in ACS   → CPE reboot, configuration drift, or WAN instability
+
+================================================================================
+4. NETWORK ELEMENT: DSLAM
+================================================================================
+
+DESCRIPTION
+───────────
+The DSLAM (Digital Subscriber Line Access Multiplexer) is the primary access
+aggregation node. Each DSLAM serves up to 48 customer lines (CPEs) via individual
+GE subscriber ports. DSLAMs connect upstream to the Metro Bridge node via a
+redundant 10GE fibre uplink pair (active/standby or LACP bonded).
+
+In EDIN, all 100 DSLAM nodes use Ethernet-only technology (no DSL copper). The
+term "DSLAM" is retained for historical and operational consistency.
+
+HARDWARE MODELS
+───────────────
+  Primary : EDIN-ACCESS-A1000  (48× GE subscriber, 2× 10GE uplink SFP+)
+  Legacy  : EDIN-ACCESS-L500   (24× GE subscriber, 1× 10GE uplink SFP+)
+
+INTERFACES
+──────────
+  Subscriber ports  : GE 1/0/1 – 1/0/48  (one per CPE)
+  Uplink primary    : 10GE 2/0/1  → Metro Bridge uplink port
+  Uplink secondary  : 10GE 2/0/2  → Metro Bridge uplink port (standby/LAG)
+  Management        : OOB MGMT port, IP in 172.16.0.0/16 range
+
+VLAN CONFIGURATION
+──────────────────
+Each subscriber port carries a unique C-VLAN (customer VLAN, range 101–4000).
+At the DSLAM uplink, QinQ (802.1ad) double-tagging is applied:
+  - Inner tag (C-tag) : per-subscriber VLAN (101–4000)
+  - Outer tag (S-tag) : per-DSLAM service VLAN (assigned at MB level)
+
+  S-tag assignment:
+    DSLAM-LON-001 → S-VLAN 1001
+    DSLAM-LON-002 → S-VLAN 1002
+    ... (incremental, 1001 to 1100 for all 100 DSLAMs)
+
+CONFIGURATION EXAMPLE — DSLAM SUBSCRIBER PORT
+───────────────────────────────────────────────
+  interface GigabitEthernet1/0/12
+    description "CPE-LON-012 — Customer: Business Line"
+    switchport mode access
+    switchport access vlan 112
+    spanning-tree portfast
+    no shutdown
+  !
+  interface GigabitEthernet2/0/1
+    description "Uplink to MB-01 Port GE-1/0/5"
+    switchport mode trunk
+    switchport trunk allowed vlan 101-148
+    switchport trunk native vlan 1
+    speed 10000
+    duplex full
+    no shutdown
+  !
+  dot1q tunneling ethertype 0x88a8
+  service-vlan 1001
+
+SPANNING TREE CONFIGURATION
+────────────────────────────
+  Protocol       : RSTP (802.1w) on subscriber ports
+  PortFast       : Enabled on all subscriber (access) ports
+  BPDUGuard      : Enabled on subscriber ports
+  Root bridge    : MB node (priority 4096)
+  DSLAM priority : 32768
+
+UPLINK REDUNDANCY
+──────────────────
+  Mode: LACP (802.3ad) bonding across 2× 10GE uplinks to MB
+  Min-links: 1 (single uplink failure does not cause LACP group failure)
+  Load balancing: src-dst-mac
+
+FAULT INDICATORS — DSLAM
+─────────────────────────
+  - Port down alarm              → Check fibre patch, CPE power
+  - Excessive CRC errors (>100/min) → Fibre contamination or bend radius issue
+  - Uplink LACP partner lost     → Check MB port and fibre run
+  - High CPU (>80%)              → Possible broadcast storm, check BPDUGuard hits
+  - Temperature >60°C            → Check cabinet cooling, raise urgent ticket
+
+================================================================================
+5. NETWORK ELEMENT: METRO BRIDGE (MB NODE)
+================================================================================
+
+DESCRIPTION
+───────────
+The Metro Bridge aggregates all DSLAM uplinks within a metropolitan area and
+provides the transition from access Ethernet to the Metro Core MPLS network.
+Each MB node supports up to 10 DSLAM connections and 2 uplinks to the MC node.
+
+HARDWARE MODELS
+───────────────
+  Primary : EDIN-MB-6500  (48× 10GE SFP+, 4× 100GE QSFP28 uplinks, 2× PSU)
+  All MB nodes are equipped with redundant dual power supplies and fans.
+
+INTERFACES
+──────────
+  DSLAM downlinks : 10GE 1/0/1 – 1/0/10  (one per DSLAM in the area)
+  MC uplinks      : 100GE 2/0/1, 100GE 2/0/2  (ECMP or LAG to MC)
+  Management      : OOB MGMT, IP in 172.17.0.0/16 range
+
+VLAN / QinQ PROCESSING
+───────────────────────
+  Incoming from DSLAM : Double-tagged frames (S-VLAN + C-VLAN)
+  At MB node          : S-VLANs are mapped to MPLS service instances (L2VPN ELANs)
+  Upstream to MC      : MPLS-encapsulated frames on 100GE trunk
+
+  VLAN mapping table example:
+    S-VLAN 1001 → MPLS VPN ID: ELAN-1001, Service: Residential Broadband
+    S-VLAN 1002 → MPLS VPN ID: ELAN-1002, Service: Residential Broadband
+    S-VLAN 1050 → MPLS VPN ID: ELAN-1050, Service: Business Leased Line
+
+MPLS CONFIGURATION
+──────────────────
+  LDP enabled on all 100GE uplink interfaces
+  RSVP-TE for traffic-engineered LSPs (optional, PE-level)
+  OSPF area 0 (backbone) for IGP, redistributed into MPLS
+
+CONFIGURATION EXAMPLE — MB-01 DSLAM DOWNLINK
+─────────────────────────────────────────────
+  interface TenGigabitEthernet1/0/1
+    description "DSLAM-LON-001 Uplink"
+    switchport mode trunk
+    switchport trunk allowed vlan 1001
+    service instance 1001 ethernet
+      encapsulation dot1q 1001
+      bridge-domain 1001
+    no shutdown
+  !
+  interface HundredGigEthernet2/0/1
+    description "Uplink to MC-01 100GE Port"
+    mpls ip
+    ospf cost 10
+    no shutdown
+  !
+  router ospf 1
+    network 10.0.0.0 0.255.255.255 area 0
+  !
+  mpls ldp router-id loopback0
+
+REDUNDANCY & RESILIENCE
+────────────────────────
+  - Dual 100GE uplinks to MC node (ECMP, equal load balancing)
+  - Dual PSU with independent feed from separate PDUs
+  - Hardware redundancy: dual supervisor modules (active/standby)
+  - BFD (Bidirectional Forwarding Detection) on MC uplinks (timers: 100ms/300ms)
+
+FAULT INDICATORS — MB NODE
+───────────────────────────
+  - 100GE uplink down        → MPLS services impacted, check MC port and fibre
+  - LDP session down         → MPLS label exchange failed, check IGP reachability
+  - BFD session flap         → Intermittent fibre, check OTDR trace on uplink span
+  - CPU >85% sustained       → OSPF/LDP instability or route table churn
+  - PSU failure alarm        → Replace PSU within 4 hours (SLA breach risk)
+  - Fan tray failure         → Immediate action required, thermal shutdown risk
+
+================================================================================
+6. NETWORK ELEMENT: METRO CORE (MC NODE)
+================================================================================
+
+DESCRIPTION
+───────────
+Metro Core nodes form the MPLS backbone within the regional network. Each MC node
+connects multiple MB nodes and provides redundant uplinks to the Peta Core. MC
+nodes run full MPLS with LDP and OSPF, acting as P (Provider) nodes in the MPLS
+architecture.
+
+HARDWARE MODELS
+───────────────
+  Primary : EDIN-MC-9000  (16× 100GE QSFP28, 4× 400GE QSFP-DD, dual supervisor)
+
+NODE ADDRESSES
+──────────────
+  MC-01 : Loopback0 10.255.1.1/32  — Serves MB-01, MB-02, MB-06
+  MC-02 : Loopback0 10.255.1.2/32  — Serves MB-03, MB-04, MB-07
+  MC-03 : Loopback0 10.255.1.3/32  — Serves MB-05, MB-08, MB-09
+  MC-04 : Loopback0 10.255.1.4/32  — Serves MB-10
+
+INTERFACES
+──────────
+  MB downlinks    : 100GE 1/x/x  (2 per MB node, ECMP)
+  Peta Core uplinks: 400GE 2/0/1, 2/0/2  (dual path to each Peta Core)
+  Management      : OOB MGMT, IP in 172.18.0.0/16 range
+
+OSPF CONFIGURATION
+──────────────────
+  Process ID  : 1
+  Router ID   : Loopback0 address
+  Area        : 0 (all MC, MB, and Peta Core in area 0)
+  Cost        : 100GE interfaces cost 1, 10GE interfaces cost 10, 1GE cost 100
+  Timers      : Hello 1s, Dead 4s (aggressive, fast convergence)
+  Authentication: MD5 area authentication, key-chain OSPF-KEY-01
+
+MPLS LSP CONFIGURATION
+──────────────────────
+  LDP session keepalive    : 60 seconds, hold-time 180 seconds
+  RSVP-TE tunnels          : Auto-bandwidth enabled, min-bw 1G, max-bw 40G
+  Fast-reroute (FRR)       : Enabled on all RSVP-TE tunnels (50ms protection)
+  ECMP across Peta Core    : 2 equal-cost paths per MC node
+
+CONFIGURATION EXAMPLE — MC-01 BGP / MPLS
+─────────────────────────────────────────
+  router bgp 65001
+    bgp router-id 10.255.1.1
+    neighbor 10.255.2.1 remote-as 65001
+    neighbor 10.255.2.1 description "PETA-CORE-01 iBGP"
+    address-family vpnv4
+      neighbor 10.255.2.1 activate
+      neighbor 10.255.2.1 send-community extended
+  !
+  mpls traffic-eng tunnels
+  interface HundredGigEthernet1/0/1
+    mpls traffic-eng tunnels
+    rsvp bandwidth percent 90
+
+FAULT INDICATORS — MC NODE
+───────────────────────────
+  - OSPF neighbour down      → IGP failure, check interface and authentication
+  - LDP neighbour down       → MPLS traffic falling to IP fallback
+  - BGP VPNv4 route count drop → Peta Core session issue or route leak
+  - RSVP tunnel flap         → Check BFD, physical layer on affected span
+  - Card failure alarm        → Redundant line card activation, check spare inventory
+  - Temperature critical      → Immediate cooling action, consider traffic reroute
+
+================================================================================
+7. NETWORK ELEMENT: PETA CORE
+================================================================================
+
+DESCRIPTION
+───────────
+The Peta Core consists of two ultra-high-capacity routing platforms forming the
+national backbone. They interconnect all four Metro Core nodes and provide the
+gateway to the Datacenter pair. Peta Core nodes run iBGP as Route Reflectors
+and provide MPLS VPN services.
+
+HARDWARE MODELS
+───────────────
+  PETA-CORE-01 : EDIN-PC-ULTRA (32× 400GE, 8× 800GE, dual route processors)
+  PETA-CORE-02 : EDIN-PC-ULTRA (identical hardware, geographical diversity)
+
+NODE ADDRESSES
+──────────────
+  PETA-CORE-01 : Loopback0 10.255.2.1/32  — Primary
+  PETA-CORE-02 : Loopback0 10.255.2.2/32  — Secondary
+
+ROLE IN MPLS ARCHITECTURE
+──────────────────────────
+  BGP Role    : iBGP Route Reflector for all P and PE nodes
+  MPLS Role   : P node (transit) and PE node (VPN termination toward DC)
+  Protocols   : OSPF, LDP, RSVP-TE, iBGP with VPNv4 address family
+
+INTER-PETA CORE LINK
+─────────────────────
+  2× 800GE direct inter-chassis link (ICL) — active/active, LACP
+  BFD interval: 50ms/150ms (3 multiplier)
+  Purpose: Route Reflector peering, fast-failover synchronisation
+
+BGP ROUTE REFLECTOR CONFIGURATION
+───────────────────────────────────
+  router bgp 65001
+    bgp cluster-id 1
+    bgp router-id 10.255.2.1
+    neighbor RR-CLIENTS peer-group
+    neighbor RR-CLIENTS remote-as 65001
+    neighbor RR-CLIENTS route-reflector-client
+    neighbor 10.255.1.1 peer-group RR-CLIENTS  ! MC-01
+    neighbor 10.255.1.2 peer-group RR-CLIENTS  ! MC-02
+    neighbor 10.255.1.3 peer-group RR-CLIENTS  ! MC-03
+    neighbor 10.255.1.4 peer-group RR-CLIENTS  ! MC-04
+    neighbor 10.255.3.1 peer-group RR-CLIENTS  ! DC-NORTH-01 BNG
+    neighbor 10.255.3.2 peer-group RR-CLIENTS  ! DC-SOUTH-01 BNG
+
+FAULT INDICATORS — PETA CORE
+─────────────────────────────
+  - BGP session drop to MC      → Mass service outage potential, Priority H ticket
+  - Route Reflector split-brain → Both PCs operating independently, check ICL
+  - OSPF area partition         → Subset of MC nodes isolated
+  - Hardware route processor fail → Standby RP takes over (10–15s convergence)
+  - Capacity utilisation >80%   → Capacity alarm, raise planning request
+
+================================================================================
+8. NETWORK ELEMENT: DATACENTER (DC)
+================================================================================
+
+DESCRIPTION
+───────────
+The Datacenters host the BNG (Broadband Network Gateway), RADIUS authentication,
+DHCP servers, and service platforms (IPTV headend, VoIP SBC, content CDN).
+All subscriber sessions terminate here via MPLS L3VPN handoff from the Peta Core.
+
+DATACENTERS
+───────────
+  DC-NORTH-01 : Serves northern regions (MC-01, MC-02)
+  DC-SOUTH-01 : Serves southern regions (MC-03, MC-04)
+
+BNG (Broadband Network Gateway)
+────────────────────────────────
+  Model      : EDIN-BNG-9800 (2× chassis, active-active)
+  Capacity   : Up to 1M concurrent PPPoE/IPoE sessions per chassis
+  Interfaces : 8× 400GE toward Peta Core; 4× 100GE to internal DC fabric
+  Protocols  : PPPoE (RFC 2516), IPoE (RFC 3315), RADIUS (RFC 2865)
+
+  BNG functions:
+    - PPPoE session termination for residential subscribers
+    - IPoE session management for business subscribers
+    - DHCP relay / local DHCP server for dynamic IP allocation
+    - QoS policy enforcement per subscriber (up/down speed profiles)
+    - Per-subscriber accounting via RADIUS to AAA server
+
+RADIUS / AAA
+─────────────
+  Primary AAA  : AAA-01.dc-north.edin.net  (10.100.1.10)
+  Secondary AAA: AAA-02.dc-south.edin.net  (10.100.2.10)
+  Protocol     : RADIUS (authentication + accounting)
+  RADIUS secret: Managed via secrets vault (not in this document)
+
+DHCP POOLS (per DC)
+────────────────────
+  Residential pool  : 100.64.0.0/10  (CG-NAT block, RFC 6598)
+  Business static   : 91.x.x.x/xx    (public IP, per-customer assignment)
+  Management pool   : 172.20.0.0/16  (CPE management)
+
+FAULT INDICATORS — DC
+──────────────────────
+  - BNG session count drop      → Upstream MPLS path issue or BNG failure
+  - RADIUS timeout              → AAA unreachable, authentication failing for new sessions
+  - DHCP pool exhaustion        → Pool size alert, capacity action required
+  - DC fabric congestion        → Internal DC network issue, contact DC team
+
+================================================================================
+9. INTERCONNECT & FIBRE INFRASTRUCTURE
+================================================================================
+
+FIBRE TYPES & STANDARDS
+────────────────────────
+  Access (DSLAM–MB): Single-mode OS2 fibre (ITU-T G.654)
+  Metro (MB–MC)    : Single-mode OS2 fibre, DWDM capable (ITU-T G.694.1)
+  Backbone (MC–PC) : Single-mode ULAF (ITU-T G.654.E), ultra-low attenuation
+  DC (PC–DC)       : Single-mode OS2, 400G coherent optics (QSFP-DD 400ZR)
+
+CONNECTOR & PATCH STANDARDS
+─────────────────────────────
+  All patch panels   : LC/APC connectors (green body)
+  Equipment SFP/QSFP : LC/PC connectors (blue body), mated to APC via hybrid lead
+  Cleaning           : All connectors cleaned before insertion (IEC 61300-3-35)
+
+OPTICAL POWER BUDGET
+─────────────────────
+  DSLAM to MB  : Max loss budget 12dB, max span 25km
+  MB to MC     : Max loss budget 18dB, max span 60km
+  MC to Peta   : Max loss budget 22dB, max span 120km
+  Peta to DC   : Max loss budget 25dB, max span 200km (amplified if required)
+
+ACCEPTABLE Rx POWER RANGES
+────────────────────────────
+  10GE SFP+  : -3 dBm to -14 dBm (alarm at -20 dBm, shutdown at -25 dBm)
+  100GE QSFP : -1 dBm to -12 dBm (alarm at -16 dBm, shutdown at -20 dBm)
+  400GE QSFP-DD : +0 dBm to -10 dBm (coherent, alarm at -15 dBm)
+
+OTDR TESTING REQUIREMENTS
+──────────────────────────
+  New fibre installation  : OTDR trace required at 1310nm and 1550nm, both directions
+  Post-repair             : OTDR trace to confirm splice loss <0.1dB per splice
+  Routine maintenance     : Annual OTDR trace on all backbone spans
+  Fault diagnosis         : OTDR to be dispatched within 2 hours of suspected fibre break
+
+================================================================================
+10. ETHERNET & VLAN CONFIGURATION STANDARDS
+================================================================================
+
+VLAN ALLOCATION TABLE
+──────────────────────
+  VLAN Range    │ Purpose
+  ──────────────┼─────────────────────────────────────────────────
+  1             │ Native/untagged (access ports only, never routed)
+  100–200       │ Subscriber C-VLANs (per-CPE, assigned at DSLAM)
+  201–500       │ Business leased line VLANs
+  1001–1100     │ S-VLANs / QinQ outer tags (per-DSLAM, assigned at MB)
+  2001–2100     │ MPLS service VLANs (BNG-facing at DC)
+  3000–3999     │ Infrastructure point-to-point VLANs (inter-node links)
+  4000          │ Management VLAN (OOB management plane)
+  4094          │ Reserved
+  4095          │ Reserved (IEEE standard)
+
+MTU SETTINGS
+─────────────
+  Access (CPE/DSLAM)   : 1500 bytes (standard Ethernet)
+  Aggregation (MB)     : 9214 bytes (jumbo frames, QinQ overhead)
+  Metro Core (MC)      : 9214 bytes (MPLS label stack overhead included)
+  Backbone (Peta Core) : 9214 bytes
+  BNG termination      : 1500 bytes (reassembly before subscriber delivery)
+
+  NOTE: Mismatch in MTU settings is a common cause of fragmentation and
+  black-hole issues. Always verify MTU end-to-end when provisioning new services.
+
+802.1Q TAGGING MODEL
+──────────────────────
+  CPE WAN interface  → Untagged (DSLAM access port strips tags)
+  DSLAM subscriber   → Access mode, VLAN 101–200 (C-tag added internally)
+  DSLAM uplink       → 802.1ad QinQ trunk (C-tag + S-tag)
+  MB downlink        → 802.1ad QinQ trunk (S-VLAN selective)
+  MB uplink          → MPLS encapsulated (no VLAN on trunk, MPLS label only)
+
+================================================================================
+11. IP ADDRESSING & ROUTING PROTOCOLS
+================================================================================
+
+IP ADDRESSING PLAN
+──────────────────
+  Block            │ Usage
+  ─────────────────┼────────────────────────────────
+  10.0.0.0/8       │ Infrastructure (loopbacks, links)
+  10.255.0.0/24    │ DSLAM loopbacks (10.255.0.x)
+  10.255.1.0/24    │ MB loopbacks (10.255.1.x)
+  10.255.2.0/24    │ MC loopbacks (10.255.2.x — note: overlaps for clarity)
+  10.255.3.0/24    │ Peta Core loopbacks
+  10.255.4.0/24    │ DC loopbacks
+  10.1.x.x/30      │ Point-to-point links (DSLAM–MB, /30 each)
+  10.2.x.x/30      │ Point-to-point links (MB–MC)
+  10.3.x.x/30      │ Point-to-point links (MC–Peta Core)
+  172.16.0.0/16    │ DSLAM OOB management
+  172.17.0.0/16    │ MB OOB management
+  172.18.0.0/16    │ MC OOB management
+  172.19.0.0/16    │ Peta Core OOB management
+  172.20.0.0/16    │ CPE TR-069 management
+  100.64.0.0/10    │ Subscriber dynamic (CG-NAT, RFC 6598)
+
+ROUTING PROTOCOLS
+──────────────────
+  IGP (underlay)   : OSPF v2, single area 0, all nodes
+  MPLS (overlay)   : LDP for label distribution
+  Traffic Eng      : RSVP-TE for protected core LSPs
+  BGP (VPN)        : iBGP AS 65001, VPNv4 address family
+  Route Reflectors : PETA-CORE-01 (primary), PETA-CORE-02 (secondary)
+
+OSPF SUMMARY
+─────────────
+  All infrastructure P2P links are in OSPF area 0.
+  Loopback interfaces are redistributed as host routes (/32).
+  BFD is enabled on all OSPF neighbours for fast failure detection (100/300ms).
+  Max LSA count : 50,000 (alert at 45,000)
+  SPF timers    : Initial 200ms, min-hold 1s, max-hold 10s
+
+================================================================================
+12. QUALITY OF SERVICE (QoS) POLICY
+================================================================================
+
+TRAFFIC CLASSIFICATION
+───────────────────────
+  Class          │ DSCP Marking │ Description
+  ───────────────┼──────────────┼──────────────────────────────────
+  VOICE          │ EF (46)      │ VoIP RTP/RTCP, latency <20ms
+  VIDEO          │ AF41 (34)    │ IPTV, video streaming
+  BUSINESS-DATA  │ AF31 (26)    │ Business leased line traffic
+  MGMT           │ CS6 (48)     │ Network management, OSPF, BGP
+  BEST-EFFORT    │ BE / CS0 (0) │ Standard residential broadband
+
+QOS POLICY HIERARCHY
+─────────────────────
+  At CPE     → DSCP marking based on traffic type (port/application)
+  At DSLAM   → DSCP preserved, CoS (802.1p) remarked to match
+  At MB      → Per-VLAN/service policing, shaping on downlinks
+  At MC/PC   → Per-MPLS-EXP (Traffic Class) queuing, 4-class model
+  At BNG     → Per-subscriber rate enforcement (down/up speed profile)
+
+SUBSCRIBER SPEED PROFILES
+──────────────────────────
+  Profile     │ Download │ Upload  │ Burst Factor
+  ────────────┼──────────┼─────────┼─────────────
+  RES-100     │ 100 Mbps │ 20 Mbps │ 1.5× for 10s
+  RES-500     │ 500 Mbps │ 100 Mbps│ 1.5× for 10s
+  RES-1000    │ 1 Gbps   │ 200 Mbps│ 1.2× for 5s
+  BIZ-100     │ 100 Mbps │ 100 Mbps│ No burst, guaranteed
+  BIZ-1000    │ 1 Gbps   │ 1 Gbps  │ No burst, guaranteed
+
+================================================================================
+13. NETWORK MANAGEMENT & MONITORING
+================================================================================
+
+MANAGEMENT SYSTEMS
+──────────────────
+  NMS (Network Management System) : EDIN-NMS v8.2 (internal platform)
+  Fault Management                : Netcool OMNIbus v8.1
+  Performance Monitoring          : Grafana + Prometheus + SNMP collectors
+  Configuration Management        : Ansible + Netconf/YANG
+  Log Management                  : Elastic Stack (ELK) — centralised syslog
+  IPAM (IP Address Management)    : InfoBlox
+  Ticket System                   : ServiceNow (ITSM integration)
+
+SNMP CONFIGURATION
+──────────────────
+  Version     : SNMPv3 (authPriv mode)
+  Auth        : SHA-256
+  Privacy     : AES-256
+  Community   : N/A (SNMPv3 only, communities disabled)
+  Trap targets: 10.100.1.50 (primary NMS), 10.100.2.50 (secondary NMS)
+
+KEY MIBs POLLED
+────────────────
+  IF-MIB          : Interface utilisation, errors, status
+  ENTITY-MIB      : Hardware inventory, PSU/fan status
+  OSPF-MIB        : OSPF neighbour state, LSA counts
+  BGP4-MIB        : BGP peer state, prefix counts
+  MPLS-LDP-MIB    : LDP session state, label bindings
+  CISCO-MEMORY-MIB: Memory utilisation per process
+  CISCO-CPU-MIB   : CPU utilisation per process
+
+MONITORING THRESHOLDS & ALERTS
+────────────────────────────────
+  Metric                        │ Warning  │ Critical │ Action
+  ──────────────────────────────┼──────────┼──────────┼────────────────────
+  Interface utilisation         │ 70%      │ 85%      │ Capacity review
+  CPU utilisation               │ 70%      │ 85%      │ Check processes
+  Memory utilisation            │ 70%      │ 85%      │ Restart if stable
+  Optical Rx power              │ -16dBm   │ -20dBm   │ Inspect fibre
+  Temperature (chassis)         │ 55°C     │ 65°C     │ Check cooling
+  BGP prefix count drop >10%    │ Yes      │ —        │ Check BGP peers
+  OSPF neighbour down           │ —        │ Yes      │ Immediate P1 alert
+  BFD session down              │ —        │ Yes      │ Immediate P1 alert
+
+================================================================================
+14. FAULT MANAGEMENT & ALARM REFERENCE
+================================================================================
+
+ALARM SEVERITY DEFINITIONS
+────────────────────────────
+  CRITICAL  : Service-affecting, immediate action required
+  MAJOR     : Service-degraded or imminent failure, urgent action
+  MINOR     : Non-service-affecting, action within business hours
+  WARNING   : Threshold approaching, monitor and plan
+  INFO      : Informational, no action required
+
+COMMON ALARMS AND PROBABLE CAUSES
+───────────────────────────────────
+
+  Alarm: LINK_DOWN
+  Severity: CRITICAL
+  Probable causes:
+    1. Fibre break or unplugged patch lead
+    2. Remote end admin shutdown
+    3. SFP/QSFP failure
+    4. Power failure on remote node
+  Actions: Check physical layer, clean/replace SFP, inspect fibre run with OTDR
+
+  Alarm: HIGH_ERROR_RATE (CRC/Input errors >100/min)
+  Severity: MAJOR
+  Probable causes:
+    1. Dirty or damaged fibre connector
+    2. Fibre bend radius violation
+    3. Faulty SFP optical module
+    4. Incompatible SFP (non-approved hardware)
+  Actions: Clean connectors, test with known-good SFP, OTDR trace
+
+  Alarm: CPU_HIGH
+  Severity: MAJOR
+  Probable causes:
+    1. OSPF/BGP route churn (high LSA/UPDATE rate)
+    2. Broadcast storm on aggregation ports
+    3. Software bug / memory leak
+    4. Active DDoS attack passing through node
+  Actions: Check OSPF and BGP logs, check for spanning-tree TCN events
+
+  Alarm: BGP_PEER_DOWN
+  Severity: CRITICAL
+  Probable causes:
+    1. Physical link failure on peering interface
+    2. OSPF reachability to peer lost
+    3. BGP hold-timer expired (congestion causing missed keepalives)
+    4. Authentication mismatch (key rotation issue)
+  Actions: Check underlay OSPF, ping peer loopback, verify BGP config
+
+  Alarm: OPTICAL_POWER_LOW
+  Severity: MAJOR
+  Probable causes:
+    1. Fibre splice degradation (age, temperature cycling)
+    2. Dirty connector
+    3. Excessive fibre bends
+    4. Partial fibre break (crush)
+  Actions: Clean connectors first, OTDR trace, escalate for splice repair
+
+  Alarm: TEMPERATURE_HIGH
+  Severity: CRITICAL (>65°C)
+  Probable causes:
+    1. Cabinet cooling failure (AC or fan unit)
+    2. Obstructed airflow (cable management issue)
+    3. Ambient temperature exceedance in building
+  Actions: Check cabinet fans, clear airflow obstructions, alert facilities
+
+  Alarm: PSU_FAILURE
+  Severity: MAJOR
+  Probable causes:
+    1. PSU hardware failure
+    2. Mains power feed failure (check PDU)
+    3. PSU overcurrent protection triggered
+  Actions: Check PDU feed, replace PSU within SLA window
+
+================================================================================
+15. TROUBLESHOOTING PROCEDURES
+================================================================================
+
+───────────────────────────────────────────────────────────────
+PROCEDURE T-001: CUSTOMER LINE DOWN (CPE Unreachable)
+───────────────────────────────────────────────────────────────
+Symptoms: Customer reports complete loss of service. CPE management unreachable.
+
+Step 1 — Verify scope
+  □ Check ticket system for existing active incidents on DSLAM/MB/MC
+  □ Check if multiple customers on same DSLAM are affected (indicates DSLAM/uplink fault)
+  □ If only one line: isolated CPE or subscriber port fault
+
+Step 2 — DSLAM port check
+  □ SSH to DSLAM:  ssh admin@<dslam-mgmt-ip>
+  □ Check port status:
+      show interface GigabitEthernet1/0/<port_number>
+  □ Look for: line protocol, input/output errors, duplex, speed
+  □ If port is DOWN: check physical fibre, check CPE power status (field visit)
+  □ If port is UP but no traffic: check VLAN mapping, check CPE config
+
+Step 3 — VLAN path verification
+  □ Confirm VLAN is correctly provisioned:
+      show vlan id <cvlan_id>
+  □ Confirm VLAN appears on DSLAM uplink:
+      show interface trunk | include <cvlan_id>
+  □ Confirm QinQ S-VLAN at MB node:
+      SSH to MB node
+      show service instance id <svlan_id> interface tenGig 1/0/x
+
+Step 4 — BNG session check
+  □ SSH to BNG at DC
+  □ Check if subscriber session exists:
+      show subscriber session summary filter identifier <CPE-MAC-or-Username>
+  □ If no session: check RADIUS logs for authentication failure
+  □ If session present but no IP: check DHCP pool availability
+
+Step 5 — CPE remote reboot (if accessible via management)
+  □ Via TR-069 ACS: trigger reboot on CPE management portal
+  □ Wait 3 minutes for CPE to re-register
+  □ Verify session establishment on BNG
+
+Step 6 — Escalation
+  □ If fault not resolved within 60 minutes: escalate to Tier 2
+  □ If physical fault suspected: raise field dispatch ticket
+
+───────────────────────────────────────────────────────────────
+PROCEDURE T-002: DSLAM NODE OFFLINE / UNREACHABLE
+───────────────────────────────────────────────────────────────
+Symptoms: All CPEs on DSLAM unreachable. DSLAM management IP ping loss.
+
+Step 1 — Check NMS for alarms on DSLAM and its MB uplink
+Step 2 — Verify MB uplink port status:
+    SSH to MB: show interface tenGig 1/0/<dslam_uplink_port>
+    If port down: physical fibre or DSLAM power fault
+Step 3 — Check DSLAM OOB management (out-of-band network):
+    ping <dslam-oob-ip> from OOB management host
+    If OOB reachable but in-band not: DSLAM software crash or VLAN issue
+    If OOB unreachable: power failure or physical node offline
+Step 4 — DSLAM power cycle (if authorised):
+    Contact site facilities or remote hands at DSLAM cabinet
+    Confirm safe to power cycle (no planned maintenance)
+    Power cycle and monitor NMS for alarm clearance
+Step 5 — If node remains offline after 30 mins: raise Priority H ticket and
+         dispatch field engineer for on-site diagnosis
+
+───────────────────────────────────────────────────────────────
+PROCEDURE T-003: METRO BRIDGE UPLINK FAILURE
+───────────────────────────────────────────────────────────────
+Symptoms: All services in a metro area degraded or offline.
+
+Step 1 — Identify which MB uplink(s) are down (NMS alarm)
+Step 2 — Verify LACP group status on MB:
+    show etherchannel summary
+    If single member down: degraded but operational (check cause)
+    If both members down: full metro area outage
+Step 3 — Check OSPF neighbour to MC:
+    show ip ospf neighbor
+    If neighbour down: check IP connectivity to MC
+Step 4 — Check optical levels on 100GE interface:
+    show interface 100GE 2/0/1 transceiver
+    Compare Rx power to acceptable range (-1 to -12 dBm)
+Step 5 — If optical power low: dispatch fibre engineer for OTDR and inspection
+Step 6 — If optical normal but link still down: check remote MC port
+Step 7 — Confirm redundant uplink is carrying all traffic while fault is resolved
+
+───────────────────────────────────────────────────────────────
+PROCEDURE T-004: BGP/MPLS INSTABILITY
+───────────────────────────────────────────────────────────────
+Symptoms: Intermittent service drops, high latency, route flapping.
+
+Step 1 — Check BGP peer states on Peta Core:
+    show bgp vpnv4 unicast all summary
+    Note any peers in Idle, Active, or Connect state
+Step 2 — Check OSPF route table for underlay stability:
+    show ip route ospf | include O
+    Count routes; compare to baseline (should be ~200 routes)
+Step 3 — Check MPLS label table:
+    show mpls forwarding-table
+    Verify labels present for all loopbacks
+Step 4 — Check BFD sessions:
+    show bfd neighbors
+    Any BFD session flapping = physical layer intermittent issue
+Step 5 — Check event logs for OSPF or BGP state change times:
+    show logging | include OSPF|BGP|DOWN|UP
+Step 6 — If route flap is isolated to one MC: check MC hardware (card failure)
+Step 7 — If Peta Core is affected: escalate immediately (Priority H), engage
+         senior NOC engineer for core routing investigation
+
+───────────────────────────────────────────────────────────────
+PROCEDURE T-005: SLOW SPEEDS / DEGRADED THROUGHPUT
+───────────────────────────────────────────────────────────────
+Symptoms: Customer reports slow internet speeds. No full outage.
+
+Step 1 — Verify customer speed profile is correct on BNG:
+    show subscriber session filter <username>
+    Confirm committed rate (CIR) and peak rate (PIR) match contracted service
+Step 2 — Check DSLAM subscriber port for errors:
+    show interface GE1/0/<port> | include error|rate
+    CRC errors >10/min may indicate physical layer noise
+Step 3 — Check link utilisation at bottleneck:
+    Check Grafana dashboard for DSLAM uplink, MB interface, and core links
+    Any interface >75% sustained utilisation is a congestion concern
+Step 4 — If congestion on core: traffic engineering reroute or capacity review
+Step 5 — If physical errors: initiate PROCEDURE T-006 (Fibre Fault)
+Step 6 — If BNG rate-limiting incorrect: update subscriber profile via provisioning system
+
+───────────────────────────────────────────────────────────────
+PROCEDURE T-006: FIBRE FAULT INVESTIGATION
+───────────────────────────────────────────────────────────────
+Symptoms: High CRC errors, optical power low, or link down.
+
+Step 1 — Clean connectors at both near and far ends (use IEC 61300-3-35 cleaner)
+Step 2 — Re-test optical Rx power after cleaning
+Step 3 — If power still low: perform OTDR trace from near end
+    OTDR settings:
+      Wavelength: 1550nm (primary), also run 1310nm
+      Range: 150% of expected fibre span
+      Pulse width: 100ns (short spans), 1µs (long spans)
+      Averaging: 30 seconds minimum
+Step 4 — Identify fault type from OTDR trace:
+    Connector loss >0.3dB   → Re-clean or re-terminate connector
+    Splice loss >0.1dB      → Request splice technician
+    Fibre break (step event)→ Locate fault position, request civil repair
+    Bend loss (gradual rise) → Inspect cable route for crush/bend
+Step 5 — Document OTDR trace results in ticket
+Step 6 — Dispatch civil/field team with fault location reference
+Step 7 — Post-repair: verify OTDR trace confirms loss within budget
+         Verify service restoration, update and close ticket
+
+================================================================================
+16. SLA POLICY & ESCALATION MATRIX
+================================================================================
+
+SLA DEFINITIONS
+────────────────
+  Priority  │ Response Time │ Resolution Time │ Description
+  ──────────┼───────────────┼─────────────────┼────────────────────────────────
+  H (High)  │ 15 minutes    │ 4 hours         │ Major outage, multiple customers
+            │               │                 │ impacted or critical infra node
+  M (Medium)│ 30 minutes    │ 8 hours         │ Single customer outage or
+            │               │                 │ degraded service, single node fault
+  L (Low)   │ 2 hours       │ 24 hours (1 day)│ Non-service-affecting, minor
+            │               │                 │ performance issues, cosmetic faults
+
+RESPONSE TIME definition: Time from ticket creation to first engineer engagement
+RESOLUTION TIME definition: Time from ticket creation to service restoration
+
+SLA BREACH ACTIONS
+──────────────────
+  At 50% SLA elapsed  : Automated notification to Tier 2 supervisor
+  At 75% SLA elapsed  : Automatic escalation, Duty Manager notified
+  At 100% SLA breach  : SLA breach ticket created, Customer Relations notified
+                        Root cause analysis (RCA) required within 24 hours
+
+SLA EXCLUSIONS
+──────────────
+  The following do not count toward SLA resolution time:
+    - Time awaiting customer confirmation or access to premises
+    - Approved maintenance windows (pre-agreed with customer)
+    - Force majeure events (major disasters, civil unrest)
+    - Third-party infrastructure delays (Openreach civils, power company)
+
+ESCALATION MATRIX
+──────────────────
+  Level │ Role              │ Contact Method          │ SLA Trigger
+  ──────┼───────────────────┼─────────────────────────┼────────────────────
+  L1    │ NOC Tier 1 Eng.   │ Ticket assignment        │ Initial creation
+  L2    │ NOC Tier 2 Eng.   │ Ticket escalation + call │ 50% SLA elapsed
+  L3    │ NOC Tier 3 / SME  │ Direct call + bridge     │ 75% SLA elapsed
+  MGT   │ NOC Duty Manager  │ Phone / on-call pager    │ SLA breach imminent
+  EXEC  │ Operations Director│ Emergency escalation    │ Major P1 (100+ customers)
+
+PRIORITY H — TICKET MANAGEMENT PROCESS
+────────────────────────────────────────
+  1. Ticket created (T+0)          — L1 assigned, initial diagnosis begins
+  2. First update (T+15 min)       — Status update posted to ticket
+  3. L2 engaged (T+30 min)        — If not resolved, L2 joins
+  4. Bridge call opened (T+1hr)    — All relevant engineers on conference call
+  5. Duty Manager alerted (T+3hr) — Approaches 4hr SLA boundary
+  6. SLA boundary (T+4hr)         — If not resolved: breach logged, escalate to EXEC
+  7. Resolution                   — Close ticket with full RCA notes
+  8. Post-incident review         — Within 24hrs for Priority H breaches
+
+PRIORITY M — TICKET MANAGEMENT PROCESS
+────────────────────────────────────────
+  1. Ticket created (T+0)          — L1 assigned
+  2. First update (T+30 min)       — Initial diagnosis notes
+  3. L2 engaged if needed (T+2hr)  — At L1 discretion or failure to progress
+  4. L2 supervisor alerted (T+6hr) — Approaching 8hr SLA
+  5. Resolution by T+8hr          — Target
+
+PRIORITY L — TICKET MANAGEMENT PROCESS
+────────────────────────────────────────
+  1. Ticket created (T+0)          — Assigned to queue
+  2. L1 picks up within 2hrs       — Begins investigation
+  3. Resolved within 24hrs (1 day) — Target
+  4. If blocked (awaiting parts/civils): update ticket with reason and ETA
+
+================================================================================
+17. CHANGE MANAGEMENT PROCEDURES
+================================================================================
+
+CHANGE CATEGORIES
+──────────────────
+  Standard  : Pre-approved low-risk changes (firmware minors, routine tasks)
+             No additional approval needed; log and execute within maintenance window
+  Normal    : Moderate-risk changes requiring CAB (Change Advisory Board) approval
+             7 days notice required; full rollback plan mandatory
+  Emergency : Unplanned urgent changes needed to restore service
+             Emergency CAB (eCAB) approval within 2 hours; post-change review required
+
+MAINTENANCE WINDOW SCHEDULE
+─────────────────────────────
+  Primary window : Tuesday 23:00 – 05:00 (local site time)
+  Secondary window: Sunday 02:00 – 06:00 (backup/emergency window)
+  No-change period: Friday 17:00 – Monday 08:00 (business protection freeze)
+                    Public holidays (48-hour freeze either side)
+
+PRE-CHANGE CHECKLIST
+─────────────────────
+  □ Change record raised and approved in ServiceNow
+  □ Rollback procedure documented and reviewed
+  □ Backup of current device configuration taken
+  □ Stakeholder notification sent (affected customers / internal)
+  □ NOC bridge open during change execution
+  □ Monitoring dashboard visible to change engineer
+  □ Field resource on standby if physical element involved
+
+POST-CHANGE VERIFICATION
+─────────────────────────
+  □ All alarms cleared (compare to pre-change baseline)
+  □ OSPF neighbours all up (show ip ospf neighbor)
+  □ BGP sessions all Established (show bgp summary)
+  □ Traffic levels returning to normal (Grafana dashboard)
+  □ Spot check: ping 5 random CPE management IPs
+  □ Customer service verification (sample PPPoE sessions on BNG)
+  □ Change ticket updated with outcome and close time
+
+================================================================================
+18. GLOSSARY
+================================================================================
+
+ACS      — Auto Configuration Server (TR-069 management server for CPEs)
+BFD      — Bidirectional Forwarding Detection (fast link failure protocol)
+BGP      — Border Gateway Protocol (inter-domain routing, used for MPLS VPN)
+BNG      — Broadband Network Gateway (subscriber session termination)
+CG-NAT   — Carrier-Grade Network Address Translation
+CPE      — Customer Premise Equipment
+CRC      — Cyclic Redundancy Check (frame integrity check)
+DHCP     — Dynamic Host Configuration Protocol
+DSLAM    — Digital Subscriber Line Access Multiplexer (access aggregation node)
+DSCP     — Differentiated Services Code Point (QoS marking in IP header)
+DWDM     — Dense Wavelength Division Multiplexing
+ECMP     — Equal-Cost Multi-Path routing
+ELAN     — Emulated LAN (MPLS L2VPN service)
+FRR      — Fast Re-Route (MPLS traffic engineering protection)
+GE       — Gigabit Ethernet
+IGP      — Interior Gateway Protocol (OSPF in this network)
+LACP     — Link Aggregation Control Protocol (802.3ad)
+LDP      — Label Distribution Protocol (MPLS label exchange)
+LSP      — Label Switched Path (MPLS forwarding tunnel)
+MB       — Metro Bridge (aggregation node)
+MC       — Metro Core (regional MPLS P node)
+MPLS     — Multi-Protocol Label Switching
+MTU      — Maximum Transmission Unit
+NOC      — Network Operations Centre
+OSPF     — Open Shortest Path First (IGP)
+OTDR     — Optical Time Domain Reflectometer (fibre testing equipment)
+PDU      — Power Distribution Unit
+PPPoE    — Point-to-Point Protocol over Ethernet
+PSU      — Power Supply Unit
+QinQ     — 802.1ad double VLAN tagging (also called Provider Bridging)
+QoS      — Quality of Service
+RADIUS   — Remote Authentication Dial-In User Service
+RSTP     — Rapid Spanning Tree Protocol (802.1w)
+RSVP-TE  — Resource Reservation Protocol with Traffic Engineering extensions
+RCA      — Root Cause Analysis
+SFP      — Small Form-factor Pluggable (optical transceiver)
+SLA      — Service Level Agreement
+STP      — Spanning Tree Protocol
+TR-069   — Technical Report 069 (CPE WAN Management Protocol)
+VLAN     — Virtual Local Area Network
+VPNv4    — BGP address family for MPLS L3VPN (IPv4 routes with VPN labels)
+
+================================================================================
+END OF DOCUMENT
+Network Architecture EDIN DETAILED Guide — Version 4.2
+For amendments, contact: noc-documentation@edin.net
+================================================================================

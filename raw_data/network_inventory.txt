@@ -1,0 +1,110 @@
+====================================================================================================
+NETWORK INVENTORY — END-TO-END CONNECTION TOPOLOGY
+Generated: 2026-02-27 22:00:43
+====================================================================================================
+
+LINE_ID      DSLAM                CPE_ID             MB_NODE      MB_PORT      MC_NODE    MC_PORT    PETA_CORE        DATACENTER       FIBRE_DIST_KM   VLAN     STATUS
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LINE-0001    DSLAM-LON-001        CPE-LON-001        MB-01        GE-1/0/21    MC-01      10GE-2/0/8 PETA-CORE-01     DC-NORTH-01      2.61 km         101      ACTIVE
+LINE-0002    DSLAM-MAN-002        CPE-MAN-002        MB-02        GE-1/0/8     MC-02      10GE-2/0/9 PETA-CORE-02     DC-SOUTH-01      62.73 km        102      ACTIVE
+LINE-0003    DSLAM-BIR-003        CPE-BIR-003        MB-03        GE-1/0/18    MC-03      10GE-2/0/6 PETA-CORE-01     DC-NORTH-01      50.4 km         103      ACTIVE
+LINE-0004    DSLAM-LEE-004        CPE-LEE-004        MB-04        GE-1/0/3     MC-04      10GE-2/0/14 PETA-CORE-02     DC-SOUTH-01      20.16 km        104      ACTIVE
+LINE-0005    DSLAM-GLA-005        CPE-GLA-005        MB-05        GE-1/0/18    MC-01      10GE-2/0/13 PETA-CORE-01     DC-NORTH-01      61.0 km         105      ACTIVE
+LINE-0006    DSLAM-LIV-006        CPE-LIV-006        MB-06        GE-1/0/14    MC-02      10GE-2/0/15 PETA-CORE-02     DC-SOUTH-01      38.46 km        106      ACTIVE
+LINE-0007    DSLAM-BRI-007        CPE-BRI-007        MB-07        GE-1/0/1     MC-03      10GE-2/0/11 PETA-CORE-01     DC-NORTH-01      59.49 km        107      ACTIVE
+LINE-0008    DSLAM-SHE-008        CPE-SHE-008        MB-08        GE-1/0/5     MC-04      10GE-2/0/14 PETA-CORE-02     DC-SOUTH-01      81.38 km        108      ACTIVE
+LINE-0009    DSLAM-EDI-009        CPE-EDI-009        MB-09        GE-1/0/3     MC-01      10GE-2/0/25 PETA-CORE-01     DC-NORTH-01      8.67 km         109      ACTIVE
+LINE-0010    DSLAM-CAR-010        CPE-CAR-010        MB-10        GE-1/0/20    MC-02      10GE-2/0/17 PETA-CORE-02     DC-SOUTH-01      68.7 km         110      ACTIVE
+LINE-0011    DSLAM-LON-011        CPE-LON-011        MB-01        GE-1/0/18    MC-03      10GE-2/0/8 PETA-CORE-01     DC-NORTH-01      82.73 km        111      ACTIVE
+LINE-0012    DSLAM-MAN-012        CPE-MAN-012        MB-02        GE-1/0/18    MC-04      10GE-2/0/19 PETA-CORE-02     DC-SOUTH-01      70.58 km        112      ACTIVE
+LINE-0013    DSLAM-BIR-013        CPE-BIR-013        MB-03        GE-1/0/12    MC-01      10GE-2/0/37 PETA-CORE-01     DC-NORTH-01      16.75 km        113      ACTIVE
+LINE-0014    DSLAM-LEE-014        CPE-LEE-014        MB-04        GE-1/0/22    MC-02      10GE-2/0/15 PETA-CORE-02     DC-SOUTH-01      65.82 km        114      MAINTENANCE
+LINE-0015    DSLAM-GLA-015        CPE-GLA-015        MB-05        GE-1/0/8     MC-03      10GE-2/0/7 PETA-CORE-01     DC-NORTH-01      32.62 km        115      ACTIVE
+LINE-0016    DSLAM-LIV-016        CPE-LIV-016        MB-06        GE-1/0/12    MC-04      10GE-2/0/11 PETA-CORE-02     DC-SOUTH-01      31.78 km        116      ACTIVE
+LINE-0017    DSLAM-BRI-017        CPE-BRI-017        MB-07        GE-1/0/9     MC-01      10GE-2/0/45 PETA-CORE-01     DC-NORTH-01      79.65 km        117      ACTIVE
+LINE-0018    DSLAM-SHE-018        CPE-SHE-018        MB-08        GE-1/0/20    MC-02      10GE-2/0/41 PETA-CORE-02     DC-SOUTH-01      14.96 km        118      ACTIVE
+LINE-0019    DSLAM-EDI-019        CPE-EDI-019        MB-09        GE-1/0/6     MC-03      10GE-2/0/30 PETA-CORE-01     DC-NORTH-01      32.56 km        119      MAINTENANCE
+LINE-0020    DSLAM-CAR-020        CPE-CAR-020        MB-10        GE-1/0/21    MC-04      10GE-2/0/45 PETA-CORE-02     DC-SOUTH-01      47.56 km        120      ACTIVE
+LINE-0021    DSLAM-LON-021        CPE-LON-021        MB-01        GE-1/0/2     MC-01      10GE-2/0/15 PETA-CORE-01     DC-NORTH-01      69.94 km        121      ACTIVE
+LINE-0022    DSLAM-MAN-022        CPE-MAN-022        MB-02        GE-1/0/13    MC-02      10GE-2/0/18 PETA-CORE-02     DC-SOUTH-01      6.09 km         122      DEGRADED
+LINE-0023    DSLAM-BIR-023        CPE-BIR-023        MB-03        GE-1/0/19    MC-03      10GE-2/0/46 PETA-CORE-01     DC-NORTH-01      27.09 km        123      ACTIVE
+LINE-0024    DSLAM-LEE-024        CPE-LEE-024        MB-04        GE-1/0/13    MC-04      10GE-2/0/42 PETA-CORE-02     DC-SOUTH-01      39.27 km        124      ACTIVE
+LINE-0025    DSLAM-GLA-025        CPE-GLA-025        MB-05        GE-1/0/8     MC-01      10GE-2/0/48 PETA-CORE-01     DC-NORTH-01      47.94 km        125      ACTIVE
+LINE-0026    DSLAM-LIV-026        CPE-LIV-026        MB-06        GE-1/0/19    MC-02      10GE-2/0/28 PETA-CORE-02     DC-SOUTH-01      76.37 km        126      ACTIVE
+LINE-0027    DSLAM-BRI-027        CPE-BRI-027        MB-07        GE-1/0/8     MC-03      10GE-2/0/9 PETA-CORE-01     DC-NORTH-01      43.55 km        127      ACTIVE
+LINE-0028    DSLAM-SHE-028        CPE-SHE-028        MB-08        GE-1/0/2     MC-04      10GE-2/0/8 PETA-CORE-02     DC-SOUTH-01      13.42 km        128      ACTIVE
+LINE-0029    DSLAM-EDI-029        CPE-EDI-029        MB-09        GE-1/0/22    MC-01      10GE-2/0/28 PETA-CORE-01     DC-NORTH-01      50.9 km         129      ACTIVE
+LINE-0030    DSLAM-CAR-030        CPE-CAR-030        MB-10        GE-1/0/20    MC-02      10GE-2/0/30 PETA-CORE-02     DC-SOUTH-01      45.21 km        130      MAINTENANCE
+LINE-0031    DSLAM-LON-031        CPE-LON-031        MB-01        GE-1/0/1     MC-03      10GE-2/0/44 PETA-CORE-01     DC-NORTH-01      61.4 km         131      ACTIVE
+LINE-0032    DSLAM-MAN-032        CPE-MAN-032        MB-02        GE-1/0/18    MC-04      10GE-2/0/18 PETA-CORE-02     DC-SOUTH-01      65.45 km        132      ACTIVE
+LINE-0033    DSLAM-BIR-033        CPE-BIR-033        MB-03        GE-1/0/10    MC-01      10GE-2/0/28 PETA-CORE-01     DC-NORTH-01      13.86 km        133      ACTIVE
+LINE-0034    DSLAM-LEE-034        CPE-LEE-034        MB-04        GE-1/0/24    MC-02      10GE-2/0/47 PETA-CORE-02     DC-SOUTH-01      22.76 km        134      ACTIVE
+LINE-0035    DSLAM-GLA-035        CPE-GLA-035        MB-05        GE-1/0/6     MC-03      10GE-2/0/33 PETA-CORE-01     DC-NORTH-01      77.62 km        135      DEGRADED
+LINE-0036    DSLAM-LIV-036        CPE-LIV-036        MB-06        GE-1/0/10    MC-04      10GE-2/0/41 PETA-CORE-02     DC-SOUTH-01      43.4 km         136      ACTIVE
+LINE-0037    DSLAM-BRI-037        CPE-BRI-037        MB-07        GE-1/0/12    MC-01      10GE-2/0/11 PETA-CORE-01     DC-NORTH-01      46.08 km        137      ACTIVE
+LINE-0038    DSLAM-SHE-038        CPE-SHE-038        MB-08        GE-1/0/17    MC-02      10GE-2/0/1 PETA-CORE-02     DC-SOUTH-01      51.11 km        138      ACTIVE
+LINE-0039    DSLAM-EDI-039        CPE-EDI-039        MB-09        GE-1/0/4     MC-03      10GE-2/0/24 PETA-CORE-01     DC-NORTH-01      74.75 km        139      ACTIVE
+LINE-0040    DSLAM-CAR-040        CPE-CAR-040        MB-10        GE-1/0/10    MC-04      10GE-2/0/16 PETA-CORE-02     DC-SOUTH-01      5.39 km         140      DEGRADED
+LINE-0041    DSLAM-LON-041        CPE-LON-041        MB-01        GE-1/0/3     MC-01      10GE-2/0/6 PETA-CORE-01     DC-NORTH-01      62.35 km        141      ACTIVE
+LINE-0042    DSLAM-MAN-042        CPE-MAN-042        MB-02        GE-1/0/18    MC-02      10GE-2/0/9 PETA-CORE-02     DC-SOUTH-01      11.35 km        142      ACTIVE
+LINE-0043    DSLAM-BIR-043        CPE-BIR-043        MB-03        GE-1/0/18    MC-03      10GE-2/0/11 PETA-CORE-01     DC-NORTH-01      22.9 km         143      DEGRADED
+LINE-0044    DSLAM-LEE-044        CPE-LEE-044        MB-04        GE-1/0/14    MC-04      10GE-2/0/14 PETA-CORE-02     DC-SOUTH-01      78.99 km        144      ACTIVE
+LINE-0045    DSLAM-GLA-045        CPE-GLA-045        MB-05        GE-1/0/23    MC-01      10GE-2/0/13 PETA-CORE-01     DC-NORTH-01      60.74 km        145      ACTIVE
+LINE-0046    DSLAM-LIV-046        CPE-LIV-046        MB-06        GE-1/0/22    MC-02      10GE-2/0/42 PETA-CORE-02     DC-SOUTH-01      32.05 km        146      DEGRADED
+LINE-0047    DSLAM-BRI-047        CPE-BRI-047        MB-07        GE-1/0/15    MC-03      10GE-2/0/8 PETA-CORE-01     DC-NORTH-01      21.45 km        147      ACTIVE
+LINE-0048    DSLAM-SHE-048        CPE-SHE-048        MB-08        GE-1/0/1     MC-04      10GE-2/0/38 PETA-CORE-02     DC-SOUTH-01      47.31 km        148      ACTIVE
+LINE-0049    DSLAM-EDI-049        CPE-EDI-049        MB-09        GE-1/0/1     MC-01      10GE-2/0/5 PETA-CORE-01     DC-NORTH-01      60.31 km        149      ACTIVE
+LINE-0050    DSLAM-CAR-050        CPE-CAR-050        MB-10        GE-1/0/3     MC-02      10GE-2/0/3 PETA-CORE-02     DC-SOUTH-01      73.14 km        150      ACTIVE
+LINE-0051    DSLAM-LON-051        CPE-LON-051        MB-01        GE-1/0/8     MC-03      10GE-2/0/18 PETA-CORE-01     DC-NORTH-01      57.03 km        151      ACTIVE
+LINE-0052    DSLAM-MAN-052        CPE-MAN-052        MB-02        GE-1/0/5     MC-04      10GE-2/0/47 PETA-CORE-02     DC-SOUTH-01      79.55 km        152      ACTIVE
+LINE-0053    DSLAM-BIR-053        CPE-BIR-053        MB-03        GE-1/0/16    MC-01      10GE-2/0/16 PETA-CORE-01     DC-NORTH-01      66.8 km         153      ACTIVE
+LINE-0054    DSLAM-LEE-054        CPE-LEE-054        MB-04        GE-1/0/7     MC-02      10GE-2/0/7 PETA-CORE-02     DC-SOUTH-01      8.69 km         154      ACTIVE
+LINE-0055    DSLAM-GLA-055        CPE-GLA-055        MB-05        GE-1/0/14    MC-03      10GE-2/0/27 PETA-CORE-01     DC-NORTH-01      39.96 km        155      ACTIVE
+LINE-0056    DSLAM-LIV-056        CPE-LIV-056        MB-06        GE-1/0/22    MC-04      10GE-2/0/42 PETA-CORE-02     DC-SOUTH-01      83.66 km        156      ACTIVE
+LINE-0057    DSLAM-BRI-057        CPE-BRI-057        MB-07        GE-1/0/13    MC-01      10GE-2/0/47 PETA-CORE-01     DC-NORTH-01      29.17 km        157      DEGRADED
+LINE-0058    DSLAM-SHE-058        CPE-SHE-058        MB-08        GE-1/0/8     MC-02      10GE-2/0/13 PETA-CORE-02     DC-SOUTH-01      16.57 km        158      ACTIVE
+LINE-0059    DSLAM-EDI-059        CPE-EDI-059        MB-09        GE-1/0/14    MC-03      10GE-2/0/12 PETA-CORE-01     DC-NORTH-01      24.04 km        159      ACTIVE
+LINE-0060    DSLAM-CAR-060        CPE-CAR-060        MB-10        GE-1/0/3     MC-04      10GE-2/0/29 PETA-CORE-02     DC-SOUTH-01      68.78 km        160      DEGRADED
+LINE-0061    DSLAM-LON-061        CPE-LON-061        MB-01        GE-1/0/4     MC-01      10GE-2/0/4 PETA-CORE-01     DC-NORTH-01      55.61 km        161      ACTIVE
+LINE-0062    DSLAM-MAN-062        CPE-MAN-062        MB-02        GE-1/0/1     MC-02      10GE-2/0/6 PETA-CORE-02     DC-SOUTH-01      78.78 km        162      ACTIVE
+LINE-0063    DSLAM-BIR-063        CPE-BIR-063        MB-03        GE-1/0/6     MC-03      10GE-2/0/27 PETA-CORE-01     DC-NORTH-01      41.54 km        163      ACTIVE
+LINE-0064    DSLAM-LEE-064        CPE-LEE-064        MB-04        GE-1/0/13    MC-04      10GE-2/0/4 PETA-CORE-02     DC-SOUTH-01      14.41 km        164      ACTIVE
+LINE-0065    DSLAM-GLA-065        CPE-GLA-065        MB-05        GE-1/0/13    MC-01      10GE-2/0/17 PETA-CORE-01     DC-NORTH-01      78.79 km        165      ACTIVE
+LINE-0066    DSLAM-LIV-066        CPE-LIV-066        MB-06        GE-1/0/10    MC-02      10GE-2/0/28 PETA-CORE-02     DC-SOUTH-01      59.36 km        166      ACTIVE
+LINE-0067    DSLAM-BRI-067        CPE-BRI-067        MB-07        GE-1/0/18    MC-03      10GE-2/0/43 PETA-CORE-01     DC-NORTH-01      61.21 km        167      ACTIVE
+LINE-0068    DSLAM-SHE-068        CPE-SHE-068        MB-08        GE-1/0/10    MC-04      10GE-2/0/14 PETA-CORE-02     DC-SOUTH-01      82.36 km        168      ACTIVE
+LINE-0069    DSLAM-EDI-069        CPE-EDI-069        MB-09        GE-1/0/18    MC-01      10GE-2/0/4 PETA-CORE-01     DC-NORTH-01      63.7 km         169      ACTIVE
+LINE-0070    DSLAM-CAR-070        CPE-CAR-070        MB-10        GE-1/0/19    MC-02      10GE-2/0/31 PETA-CORE-02     DC-SOUTH-01      42.99 km        170      DEGRADED
+LINE-0071    DSLAM-LON-071        CPE-LON-071        MB-01        GE-1/0/6     MC-03      10GE-2/0/4 PETA-CORE-01     DC-NORTH-01      81.69 km        171      ACTIVE
+LINE-0072    DSLAM-MAN-072        CPE-MAN-072        MB-02        GE-1/0/6     MC-04      10GE-2/0/5 PETA-CORE-02     DC-SOUTH-01      50.78 km        172      ACTIVE
+LINE-0073    DSLAM-BIR-073        CPE-BIR-073        MB-03        GE-1/0/8     MC-01      10GE-2/0/26 PETA-CORE-01     DC-NORTH-01      10.63 km        173      DEGRADED
+LINE-0074    DSLAM-LEE-074        CPE-LEE-074        MB-04        GE-1/0/8     MC-02      10GE-2/0/38 PETA-CORE-02     DC-SOUTH-01      50.74 km        174      ACTIVE
+LINE-0075    DSLAM-GLA-075        CPE-GLA-075        MB-05        GE-1/0/14    MC-03      10GE-2/0/43 PETA-CORE-01     DC-NORTH-01      49.82 km        175      ACTIVE
+LINE-0076    DSLAM-LIV-076        CPE-LIV-076        MB-06        GE-1/0/9     MC-04      10GE-2/0/14 PETA-CORE-02     DC-SOUTH-01      57.09 km        176      ACTIVE
+LINE-0077    DSLAM-BRI-077        CPE-BRI-077        MB-07        GE-1/0/9     MC-01      10GE-2/0/26 PETA-CORE-01     DC-NORTH-01      11.56 km        177      ACTIVE
+LINE-0078    DSLAM-SHE-078        CPE-SHE-078        MB-08        GE-1/0/15    MC-02      10GE-2/0/21 PETA-CORE-02     DC-SOUTH-01      79.0 km         178      DEGRADED
+LINE-0079    DSLAM-EDI-079        CPE-EDI-079        MB-09        GE-1/0/1     MC-03      10GE-2/0/30 PETA-CORE-01     DC-NORTH-01      52.99 km        179      ACTIVE
+LINE-0080    DSLAM-CAR-080        CPE-CAR-080        MB-10        GE-1/0/4     MC-04      10GE-2/0/5 PETA-CORE-02     DC-SOUTH-01      45.93 km        180      ACTIVE
+LINE-0081    DSLAM-LON-081        CPE-LON-081        MB-01        GE-1/0/5     MC-01      10GE-2/0/23 PETA-CORE-01     DC-NORTH-01      74.93 km        181      DEGRADED
+LINE-0082    DSLAM-MAN-082        CPE-MAN-082        MB-02        GE-1/0/12    MC-02      10GE-2/0/19 PETA-CORE-02     DC-SOUTH-01      13.83 km        182      ACTIVE
+LINE-0083    DSLAM-BIR-083        CPE-BIR-083        MB-03        GE-1/0/23    MC-03      10GE-2/0/20 PETA-CORE-01     DC-NORTH-01      52.19 km        183      MAINTENANCE
+LINE-0084    DSLAM-LEE-084        CPE-LEE-084        MB-04        GE-1/0/21    MC-04      10GE-2/0/34 PETA-CORE-02     DC-SOUTH-01      1.16 km         184      ACTIVE
+LINE-0085    DSLAM-GLA-085        CPE-GLA-085        MB-05        GE-1/0/10    MC-01      10GE-2/0/43 PETA-CORE-01     DC-NORTH-01      9.25 km         185      DEGRADED
+LINE-0086    DSLAM-LIV-086        CPE-LIV-086        MB-06        GE-1/0/9     MC-02      10GE-2/0/8 PETA-CORE-02     DC-SOUTH-01      75.68 km        186      ACTIVE
+LINE-0087    DSLAM-BRI-087        CPE-BRI-087        MB-07        GE-1/0/5     MC-03      10GE-2/0/18 PETA-CORE-01     DC-NORTH-01      24.31 km        187      ACTIVE
+LINE-0088    DSLAM-SHE-088        CPE-SHE-088        MB-08        GE-1/0/11    MC-04      10GE-2/0/14 PETA-CORE-02     DC-SOUTH-01      58.59 km        188      DEGRADED
+LINE-0089    DSLAM-EDI-089        CPE-EDI-089        MB-09        GE-1/0/17    MC-01      10GE-2/0/32 PETA-CORE-01     DC-NORTH-01      21.72 km        189      DEGRADED
+LINE-0090    DSLAM-CAR-090        CPE-CAR-090        MB-10        GE-1/0/2     MC-02      10GE-2/0/6 PETA-CORE-02     DC-SOUTH-01      54.1 km         190      ACTIVE
+LINE-0091    DSLAM-LON-091        CPE-LON-091        MB-01        GE-1/0/2     MC-03      10GE-2/0/1 PETA-CORE-01     DC-NORTH-01      28.69 km        191      ACTIVE
+LINE-0092    DSLAM-MAN-092        CPE-MAN-092        MB-02        GE-1/0/9     MC-04      10GE-2/0/11 PETA-CORE-02     DC-SOUTH-01      63.13 km        192      ACTIVE
+LINE-0093    DSLAM-BIR-093        CPE-BIR-093        MB-03        GE-1/0/14    MC-01      10GE-2/0/36 PETA-CORE-01     DC-NORTH-01      1.32 km         193      ACTIVE
+LINE-0094    DSLAM-LEE-094        CPE-LEE-094        MB-04        GE-1/0/23    MC-02      10GE-2/0/10 PETA-CORE-02     DC-SOUTH-01      46.6 km         194      ACTIVE
+LINE-0095    DSLAM-GLA-095        CPE-GLA-095        MB-05        GE-1/0/19    MC-03      10GE-2/0/36 PETA-CORE-01     DC-NORTH-01      13.01 km        195      ACTIVE
+LINE-0096    DSLAM-LIV-096        CPE-LIV-096        MB-06        GE-1/0/10    MC-04      10GE-2/0/24 PETA-CORE-02     DC-SOUTH-01      76.46 km        196      ACTIVE
+LINE-0097    DSLAM-BRI-097        CPE-BRI-097        MB-07        GE-1/0/2     MC-01      10GE-2/0/23 PETA-CORE-01     DC-NORTH-01      18.25 km        197      ACTIVE
+LINE-0098    DSLAM-SHE-098        CPE-SHE-098        MB-08        GE-1/0/4     MC-02      10GE-2/0/23 PETA-CORE-02     DC-SOUTH-01      66.42 km        198      DEGRADED
+LINE-0099    DSLAM-EDI-099        CPE-EDI-099        MB-09        GE-1/0/14    MC-03      10GE-2/0/40 PETA-CORE-01     DC-NORTH-01      63.83 km        199      DEGRADED
+LINE-0100    DSLAM-CAR-100        CPE-CAR-100        MB-10        GE-1/0/8     MC-04      10GE-2/0/11 PETA-CORE-02     DC-SOUTH-01      82.99 km        200      ACTIVE
+
+Total Lines: 100
+STATUS LEGEND: ACTIVE=Fully operational | DEGRADED=Partial fault | MAINTENANCE=Scheduled downtime
