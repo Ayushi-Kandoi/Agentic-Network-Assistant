@@ -57,7 +57,7 @@ def ingest():
         embedding=embeddings,
     )
     vector_store.add_documents(documents=split_documents)
-    print(f"Upserted {len(split_documents)} chunks to Qdrant Cloud ✅")
+    print(f"Upserted {len(split_documents)} chunks to Qdrant Cloud")
 
 if __name__ == "__main__":
     ingest()
