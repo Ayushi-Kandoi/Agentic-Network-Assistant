@@ -1,4 +1,4 @@
-# Agentic Network Assistant
+# NOVA: Network Operations Virtual Assistant
 
 A multi-agent AI system that automates network fault investigation for NOC (Network Operations Centre) engineers. Submit a ticket number and the system retrieves the full topology path, checks planned maintenance changes, and performs technical root cause analysis using RAG over the EDIN network architecture guide — producing a structured summary with resolution steps and SLA status.
 

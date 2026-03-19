@@ -1,4 +1,4 @@
-# Agentic Network Assistant — Certification Submission
+# NOVA: Network Operations Virtual Assistant — Certification Submission
 
 ## Task 1 — Problem, Audience, and Scope
 
